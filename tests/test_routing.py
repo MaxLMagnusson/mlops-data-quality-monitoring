@@ -8,9 +8,9 @@ outcomes and produces the right routing decisions.
 import pandas as pd
 import pytest
 
-from src.assets.validation import validate_batch, ValidationResult
-from src.utils.data_loader import generate_synthetic_baseline
+from src.assets.validation import validate_batch
 from src.drift_simulator.corrupt_data import apply_corruption
+from src.utils.data_loader import generate_synthetic_baseline
 
 
 @pytest.fixture

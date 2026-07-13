@@ -5,18 +5,13 @@ Verifies that each corruption profile produces the expected changes
 and that severity scaling works correctly.
 """
 
-import numpy as np
 import pandas as pd
 import pytest
 
 from src.drift_simulator.corrupt_data import (
-    apply_corruption,
-    apply_combined_corruption,
-    CameraFaultCorruptor,
-    SensorMissingnessCorruptor,
-    SchemaCorruptor,
-    DistributionShiftCorruptor,
     CORRUPTION_PROFILES,
+    apply_combined_corruption,
+    apply_corruption,
 )
 from src.utils.data_loader import generate_synthetic_baseline
 
@@ -96,7 +91,6 @@ class TestSchemaCorruptor:
 
     def test_mild_injects_string_values(self, baseline_df):
         result = apply_corruption(baseline_df, "schema_break", severity=0.3, seed=42)
-        df = result.corrupted_df
 
         # At least one float column should now have object dtype (mixed types)
         affected = result.columns_affected

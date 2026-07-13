@@ -18,7 +18,7 @@ from __future__ import annotations
 import io
 import json
 import logging
-from typing import Any, Optional
+from typing import Any
 
 import boto3
 import pandas as pd

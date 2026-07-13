@@ -5,20 +5,19 @@ Verifies that the validation engine correctly detects drift patterns,
 catches schema violations, and produces properly structured results.
 """
 
-import numpy as np
 import pandas as pd
 import pytest
 
 from src.assets.validation import (
-    validate_batch,
-    run_drift_report,
-    run_data_quality_tests,
     ValidationResult,
     _classify_severity,
     _get_column_mapping,
+    run_data_quality_tests,
+    run_drift_report,
+    validate_batch,
 )
-from src.utils.data_loader import generate_synthetic_baseline
 from src.drift_simulator.corrupt_data import apply_corruption
+from src.utils.data_loader import generate_synthetic_baseline
 
 
 @pytest.fixture

@@ -180,9 +180,7 @@ def run_drift_report(
     for test in report_dict.get("tests", []):
         test_name = test.get("name", "")
         if "Value Drift" in test_name and test.get("status") == "FAIL":
-            # Extract column from test description
-            desc = test.get("description", "")
-            # Already tracked via metrics above
+            # Extract column from test description (already tracked via metrics above)
             pass
 
     # Calculate overall drift score

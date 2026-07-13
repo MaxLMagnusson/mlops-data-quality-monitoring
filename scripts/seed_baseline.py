@@ -18,8 +18,8 @@ import time
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.utils.data_loader import generate_synthetic_baseline
 from src.resources.minio_resource import MinIOResource
+from src.utils.data_loader import generate_synthetic_baseline
 
 
 def main():
@@ -87,10 +87,10 @@ def main():
     print(f"   ✅ Uploaded to {uri}")
 
     # Also save locally for reference
-    print(f"\n💾 Local copy saved to data/synthetic/baseline_metadata.parquet")
+    print("\n💾 Local copy saved to data/synthetic/baseline_metadata.parquet")
     print(f"\n{'=' * 60}")
-    print(f"  Baseline seeded successfully!")
-    print(f"  You can now run the drift simulator to test the pipeline.")
+    print("  Baseline seeded successfully!")
+    print("  You can now run the drift simulator to test the pipeline.")
     print(f"{'=' * 60}\n")
 
 

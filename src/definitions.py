@@ -16,10 +16,9 @@ import os
 from dagster import Definitions
 
 from src.assets.ingestion import baseline_data, incoming_batch, incoming_data_sensor
-from src.assets.routing import validation_result, route_data
+from src.assets.routing import route_data, validation_result
 from src.resources.minio_resource import MinIOResource
 from src.resources.postgres_resource import PostgresResource
-
 
 defs = Definitions(
     assets=[

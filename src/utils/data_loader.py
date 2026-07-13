@@ -15,11 +15,11 @@ Schema mirrors nuScenes sample_annotation table:
 - Sensor channel metadata
 """
 
-import numpy as np
-import pandas as pd
 from pathlib import Path
 from typing import Optional
 
+import numpy as np
+import pandas as pd
 
 # nuScenes-like object categories with realistic frequency weights
 NUSCENES_CATEGORIES = {
@@ -132,7 +132,7 @@ def generate_synthetic_baseline(
     records = []
     for i in range(n_samples):
         category = rng.choice(categories, p=weights)
-        w, h, l = _generate_bbox_dimensions(category, rng)
+        w, h, length = _generate_bbox_dimensions(category, rng)
         scene_id = f"scene-{rng.integers(0, n_scenes):04d}"
         sample_token = f"sample-{i:06d}"
 
@@ -142,7 +142,7 @@ def generate_synthetic_baseline(
             "category": category,
             "bbox_width": w,
             "bbox_height": h,
-            "bbox_length": l,
+            "bbox_length": length,
             "translation_x": round(rng.uniform(*VALUE_RANGES["translation_x"]), 3),
             "translation_y": round(rng.uniform(*VALUE_RANGES["translation_y"]), 3),
             "translation_z": round(rng.uniform(*VALUE_RANGES["translation_z"]), 3),
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         output_dir="data/synthetic",
     )
     print(f"  → Generated {len(df)} annotations across {df['scene_id'].nunique()} scenes")
-    print(f"  → Saved to data/synthetic/baseline_metadata.parquet")
+    print("  → Saved to data/synthetic/baseline_metadata.parquet")
     print(f"  → Schema:\n{df.dtypes}\n")
 
     print("Generating synthetic camera images...")

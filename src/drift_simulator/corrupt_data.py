@@ -24,11 +24,12 @@ Usage:
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
+from pathlib import Path
+from typing import Optional
+
 import numpy as np
 import pandas as pd
-from dataclasses import dataclass, field
-from typing import Optional
-from pathlib import Path
 
 
 @dataclass
@@ -378,7 +379,6 @@ class DistributionShiftCorruptor:
 
         for col in cols_to_shift:
             col_std = result[col].std()
-            col_mean = result[col].mean()
 
             # Scale factor: 1.0 (no change) → up to 2.0x or 0.5x at max severity
             scale = 1.0 + rng.uniform(-severity * 0.5, severity * 0.8)

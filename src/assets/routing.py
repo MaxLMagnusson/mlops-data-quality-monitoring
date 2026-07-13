@@ -18,11 +18,11 @@ import pandas as pd
 from dagster import (
     AssetExecutionContext,
     AssetIn,
-    asset,
     MetadataValue,
+    asset,
 )
 
-from src.assets.validation import validate_batch, ValidationResult
+from src.assets.validation import validate_batch
 from src.resources.minio_resource import MinIOResource
 from src.resources.postgres_resource import PostgresResource
 

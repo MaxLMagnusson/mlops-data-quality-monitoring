@@ -33,14 +33,12 @@ from datetime import datetime, timezone
 # Add project root to path
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from src.utils.data_loader import generate_synthetic_baseline
 from src.drift_simulator.corrupt_data import (
-    apply_corruption,
     apply_combined_corruption,
-    CORRUPTION_PROFILES,
+    apply_corruption,
 )
 from src.resources.minio_resource import MinIOResource
-
+from src.utils.data_loader import generate_synthetic_baseline
 
 PROFILE_DESCRIPTIONS = {
     "camera_fault": "🎥 Camera Fault — Degrades visibility, adds sensor noise",
@@ -120,7 +118,7 @@ def main():
     print(f"  Seed:     {seed}")
 
     # Step 1: Generate clean data (using different seed than baseline)
-    print(f"\n📊 Generating clean batch data...")
+    print("\n📊 Generating clean batch data...")
     clean_df = generate_synthetic_baseline(
         n_samples=args.samples,
         n_scenes=10,
@@ -130,7 +128,7 @@ def main():
     # Step 2: Apply corruption
     if args.profile == "none":
         corrupted_df = clean_df
-        print(f"   → No corruption applied (clean batch)")
+        print("   → No corruption applied (clean batch)")
         rows_affected = 0
         cols_affected = []
     elif args.profile == "combined":
@@ -162,7 +160,7 @@ def main():
 
     # Step 3: Upload to MinIO
     if args.dry_run:
-        print(f"\n🏃 Dry run — skipping MinIO upload.")
+        print("\n🏃 Dry run — skipping MinIO upload.")
         # Save locally instead
         output_path = f"data/synthetic/corrupted_batch_{timestamp}.parquet"
         os.makedirs("data/synthetic", exist_ok=True)
@@ -183,11 +181,11 @@ def main():
             format="parquet",
         )
         print(f"   ✅ Uploaded to {uri}")
-        print(f"\n   The Dagster sensor will detect this file and trigger validation.")
-        print(f"   Check the Dagster UI at http://localhost:3000")
+        print("\n   The Dagster sensor will detect this file and trigger validation.")
+        print("   Check the Dagster UI at http://localhost:3000")
 
     print(f"\n{'=' * 60}")
-    print(f"  Simulation complete!")
+    print("  Simulation complete!")
     print(f"{'=' * 60}\n")
 
 
