@@ -1,6 +1,6 @@
 # 🔍 MLops Data Quality Monitoring Pipeline
 
-!(https://github.com/YOUR_USERNAME/mlops-data-quality-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/mlops-data-quality-monitoring/actions/workflows/ci.yml)
+[![CI — Lint, Test & Build](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml)
 ![Python 3.11](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 ![Dagster](https://img.shields.io/badge/Dagster-1.9-purple?logo=dagster&logoColor=white)
 ![Evidently](https://img.shields.io/badge/Evidently_AI-0.6-green)
