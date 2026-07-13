@@ -54,9 +54,7 @@ def main():
     parser = argparse.ArgumentParser(
         description="Simulate data drift by generating corrupted batches.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="\n".join(
-            f"  {k:25s} {v}" for k, v in PROFILE_DESCRIPTIONS.items()
-        ),
+        epilog="\n".join(f"  {k:25s} {v}" for k, v in PROFILE_DESCRIPTIONS.items()),
     )
     parser.add_argument(
         "--profile",

@@ -101,17 +101,13 @@ class CameraFaultCorruptor:
         if "num_lidar_pts" in result.columns:
             noise_scale = int(200 * severity)
             noise = rng.integers(-noise_scale, noise_scale, size=mask.sum())
-            result.loc[mask, "num_lidar_pts"] = (
-                result.loc[mask, "num_lidar_pts"] + noise
-            ).clip(0)
+            result.loc[mask, "num_lidar_pts"] = (result.loc[mask, "num_lidar_pts"] + noise).clip(0)
             affected_cols.append("num_lidar_pts")
 
         # Corrupt RADAR points similarly
         if "num_radar_pts" in result.columns:
             noise = rng.integers(-int(20 * severity), int(20 * severity), size=mask.sum())
-            result.loc[mask, "num_radar_pts"] = (
-                result.loc[mask, "num_radar_pts"] + noise
-            ).clip(0)
+            result.loc[mask, "num_radar_pts"] = (result.loc[mask, "num_radar_pts"] + noise).clip(0)
             affected_cols.append("num_radar_pts")
 
         return CorruptionResult(
@@ -185,7 +181,9 @@ class CameraImageCorruptor:
         # Reduce contrast
         contrast_factor = max(0.2, 1.0 - severity * 0.6)
         mean = img.mean()
-        img = ((img.astype(np.float32) - mean) * contrast_factor + mean).clip(0, 255).astype(np.uint8)
+        img = (
+            ((img.astype(np.float32) - mean) * contrast_factor + mean).clip(0, 255).astype(np.uint8)
+        )
 
         Path(output_path).parent.mkdir(parents=True, exist_ok=True)
         cv2.imwrite(output_path, img)
@@ -221,9 +219,14 @@ class SensorMissingnessCorruptor:
 
         # Columns that can have missing values from sensor failures
         target_cols = [
-            "translation_x", "translation_y", "translation_z",
-            "bbox_width", "bbox_height", "bbox_length",
-            "num_lidar_pts", "num_radar_pts",
+            "translation_x",
+            "translation_y",
+            "translation_z",
+            "bbox_width",
+            "bbox_height",
+            "bbox_length",
+            "num_lidar_pts",
+            "num_radar_pts",
         ]
         target_cols = [c for c in target_cols if c in result.columns]
 
@@ -280,17 +283,19 @@ class SchemaCorruptor:
         rows_affected = 0
 
         float_cols = [
-            "translation_x", "translation_y", "translation_z",
-            "bbox_width", "bbox_height", "bbox_length",
+            "translation_x",
+            "translation_y",
+            "translation_z",
+            "bbox_width",
+            "bbox_height",
+            "bbox_length",
         ]
         float_cols = [c for c in float_cols if c in result.columns]
 
         if severity < 0.5:
             # Mild: inject string values into some numeric cells
             n_corrupted_cols = max(1, int(len(float_cols) * severity))
-            cols_to_corrupt = rng.choice(
-                float_cols, size=n_corrupted_cols, replace=False
-            ).tolist()
+            cols_to_corrupt = rng.choice(float_cols, size=n_corrupted_cols, replace=False).tolist()
 
             for col in cols_to_corrupt:
                 # Convert to object dtype so we can mix types
@@ -362,9 +367,14 @@ class DistributionShiftCorruptor:
         result = df.copy()
 
         numeric_cols = [
-            "bbox_width", "bbox_height", "bbox_length",
-            "translation_x", "translation_y", "translation_z",
-            "num_lidar_pts", "num_radar_pts",
+            "bbox_width",
+            "bbox_height",
+            "bbox_length",
+            "translation_x",
+            "translation_y",
+            "translation_z",
+            "num_lidar_pts",
+            "num_radar_pts",
         ]
         numeric_cols = [c for c in numeric_cols if c in result.columns]
 

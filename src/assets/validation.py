@@ -290,9 +290,7 @@ def validate_batch(
     # --- Step 2: Data Quality Tests ---
     logger.info("Running data quality tests...")
     try:
-        quality_snapshot, quality_summary = run_data_quality_tests(
-            reference_df, current_df
-        )
+        quality_snapshot, quality_summary = run_data_quality_tests(reference_df, current_df)
         quality_html = quality_snapshot.get_html_str(as_iframe=False)
     except Exception as e:
         logger.error(f"Data quality tests failed: {e}")

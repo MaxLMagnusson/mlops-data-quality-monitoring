@@ -76,14 +76,16 @@ def validation_result(
     )
 
     # Add rich metadata for Dagster UI
-    context.add_output_metadata({
-        "status": result.status,
-        "drift_score": result.drift_score,
-        "drifted_columns": str(result.drifted_columns),
-        "severity": result.severity,
-        "failed_tests": f"{result.failed_tests}/{result.total_tests}",
-        "execution_time": f"{result.execution_time_seconds:.1f}s",
-    })
+    context.add_output_metadata(
+        {
+            "status": result.status,
+            "drift_score": result.drift_score,
+            "drifted_columns": str(result.drifted_columns),
+            "severity": result.severity,
+            "failed_tests": f"{result.failed_tests}/{result.total_tests}",
+            "execution_time": f"{result.execution_time_seconds:.1f}s",
+        }
+    )
 
     # Store the HTML reports and result data for the routing step
     return {
@@ -127,17 +129,13 @@ def route_data(
 
     # --- Step 1: Find the batch to route ---
     objects = minio.list_objects(INCOMING_BUCKET)
-    parquet_objects = [
-        obj for obj in objects if obj["Key"].endswith(".parquet")
-    ]
+    parquet_objects = [obj for obj in objects if obj["Key"].endswith(".parquet")]
 
     if not parquet_objects:
         context.log.warning("No parquet files to route in incoming-data bucket.")
         batch_name = f"unknown_batch_{timestamp}"
     else:
-        latest = sorted(
-            parquet_objects, key=lambda x: x["LastModified"], reverse=True
-        )[0]
+        latest = sorted(parquet_objects, key=lambda x: x["LastModified"], reverse=True)[0]
         batch_name = latest["Key"]
 
     # --- Step 2: Save Evidently reports to MinIO ---
@@ -161,24 +159,16 @@ def route_data(
     if passed:
         # Move to clean production lake
         dest_prefix = f"validated/{timestamp}/"
-        context.log.info(
-            f"✅ PASSED — Moving data to s3://{CLEAN_BUCKET}/{dest_prefix}"
-        )
+        context.log.info(f"✅ PASSED — Moving data to s3://{CLEAN_BUCKET}/{dest_prefix}")
         if parquet_objects:
-            moved = minio.move_prefix(
-                INCOMING_BUCKET, "", CLEAN_BUCKET, dest_prefix
-            )
+            moved = minio.move_prefix(INCOMING_BUCKET, "", CLEAN_BUCKET, dest_prefix)
             context.log.info(f"Moved {len(moved)} objects to clean lake.")
     else:
         # Move to quarantine
         dest_prefix = f"quarantined/{timestamp}/"
-        context.log.info(
-            f"❌ FAILED — Moving data to s3://{QUARANTINE_BUCKET}/{dest_prefix}"
-        )
+        context.log.info(f"❌ FAILED — Moving data to s3://{QUARANTINE_BUCKET}/{dest_prefix}")
         if parquet_objects:
-            moved = minio.move_prefix(
-                INCOMING_BUCKET, "", QUARANTINE_BUCKET, dest_prefix
-            )
+            moved = minio.move_prefix(INCOMING_BUCKET, "", QUARANTINE_BUCKET, dest_prefix)
             context.log.info(f"Moved {len(moved)} objects to quarantine.")
 
     # --- Step 4: Log to PostgreSQL ---
@@ -201,12 +191,14 @@ def route_data(
     context.log.info(f"Logged pipeline run: {run_id}")
 
     # Add metadata for Dagster UI
-    context.add_output_metadata({
-        "run_id": run_id,
-        "status": status,
-        "destination": CLEAN_BUCKET if passed else QUARANTINE_BUCKET,
-        "drift_report": MetadataValue.url(report_paths.get("drift_report", "")),
-    })
+    context.add_output_metadata(
+        {
+            "run_id": run_id,
+            "status": status,
+            "destination": CLEAN_BUCKET if passed else QUARANTINE_BUCKET,
+            "drift_report": MetadataValue.url(report_paths.get("drift_report", "")),
+        }
+    )
 
     return {
         "run_id": run_id,

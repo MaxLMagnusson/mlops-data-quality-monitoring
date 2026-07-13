@@ -23,28 +23,33 @@ from src.utils.data_loader import generate_synthetic_baseline
 
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Generate and upload baseline dataset to MinIO."
-    )
+    parser = argparse.ArgumentParser(description="Generate and upload baseline dataset to MinIO.")
     parser.add_argument(
-        "--samples", type=int, default=1000,
+        "--samples",
+        type=int,
+        default=1000,
         help="Number of annotation samples to generate (default: 1000)",
     )
     parser.add_argument(
-        "--scenes", type=int, default=10,
+        "--scenes",
+        type=int,
+        default=10,
         help="Number of scenes (default: 10)",
     )
     parser.add_argument(
-        "--endpoint", type=str,
+        "--endpoint",
+        type=str,
         default=os.getenv("MINIO_ENDPOINT", "http://localhost:9000"),
         help="MinIO endpoint URL",
     )
     parser.add_argument(
-        "--access-key", type=str,
+        "--access-key",
+        type=str,
         default=os.getenv("MINIO_ROOT_USER", "minioadmin"),
     )
     parser.add_argument(
-        "--secret-key", type=str,
+        "--secret-key",
+        type=str,
         default=os.getenv("MINIO_ROOT_PASSWORD", "minioadmin123"),
     )
     args = parser.parse_args()

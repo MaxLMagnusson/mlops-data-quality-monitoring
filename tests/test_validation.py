@@ -35,18 +35,14 @@ def clean_current_df() -> pd.DataFrame:
 @pytest.fixture
 def drifted_df(reference_df) -> pd.DataFrame:
     """Dataset with significant distribution shift."""
-    result = apply_corruption(
-        reference_df, "distribution_shift", severity=0.8, seed=42
-    )
+    result = apply_corruption(reference_df, "distribution_shift", severity=0.8, seed=42)
     return result.corrupted_df
 
 
 @pytest.fixture
 def missing_df(reference_df) -> pd.DataFrame:
     """Dataset with missing values."""
-    result = apply_corruption(
-        reference_df, "sensor_missing", severity=0.6, seed=42
-    )
+    result = apply_corruption(reference_df, "sensor_missing", severity=0.6, seed=42)
     return result.corrupted_df
 
 

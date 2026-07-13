@@ -149,9 +149,7 @@ class MinIOResource(ConfigurableResource):
         logger.info(f"Downloaded s3://{bucket}/{key} to {local_path}")
         return local_path
 
-    def upload_json(
-        self, data: dict[str, Any], bucket: str, key: str
-    ) -> str:
+    def upload_json(self, data: dict[str, Any], bucket: str, key: str) -> str:
         """Upload a JSON object to MinIO."""
         client = self._get_client()
         body = json.dumps(data, indent=2, default=str).encode("utf-8")
@@ -173,9 +171,7 @@ class MinIOResource(ConfigurableResource):
         logger.info(f"Uploaded HTML report to {uri}")
         return uri
 
-    def list_objects(
-        self, bucket: str, prefix: str = ""
-    ) -> list[dict[str, Any]]:
+    def list_objects(self, bucket: str, prefix: str = "") -> list[dict[str, Any]]:
         """
         List objects in a bucket, optionally filtered by prefix.
 
@@ -214,9 +210,7 @@ class MinIOResource(ConfigurableResource):
         client.delete_object(Bucket=source_bucket, Key=source_key)
 
         dest_uri = f"s3://{dest_bucket}/{dest_key}"
-        logger.info(
-            f"Moved s3://{source_bucket}/{source_key} → {dest_uri}"
-        )
+        logger.info(f"Moved s3://{source_bucket}/{source_key} → {dest_uri}")
         return dest_uri
 
     def move_prefix(
@@ -233,7 +227,7 @@ class MinIOResource(ConfigurableResource):
         for obj in objects:
             source_key = obj["Key"]
             # Replace the source prefix with dest prefix
-            relative_key = source_key[len(source_prefix):]
+            relative_key = source_key[len(source_prefix) :]
             dest_key = dest_prefix + relative_key
             self.move_object(source_bucket, source_key, dest_bucket, dest_key)
             moved.append(f"s3://{dest_bucket}/{dest_key}")

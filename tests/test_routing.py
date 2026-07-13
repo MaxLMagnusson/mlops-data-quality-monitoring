@@ -28,9 +28,7 @@ def clean_batch() -> pd.DataFrame:
 @pytest.fixture
 def drifted_batch(reference_df) -> pd.DataFrame:
     """Drifted batch that should fail validation."""
-    result = apply_corruption(
-        reference_df, "distribution_shift", severity=0.9, seed=42
-    )
+    result = apply_corruption(reference_df, "distribution_shift", severity=0.9, seed=42)
     return result.corrupted_df
 
 
@@ -72,9 +70,7 @@ class TestRoutingDecision:
         profiles = ["camera_fault", "sensor_missing", "distribution_shift"]
 
         for profile in profiles:
-            corrupted = apply_corruption(
-                reference_df, profile, severity=0.8, seed=42
-            )
+            corrupted = apply_corruption(reference_df, profile, severity=0.8, seed=42)
             result = validate_batch(reference_df, corrupted.corrupted_df)
 
             assert result.drift_detected or result.failed_tests > 0, (

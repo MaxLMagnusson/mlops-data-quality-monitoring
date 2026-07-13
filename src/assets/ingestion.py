@@ -92,10 +92,7 @@ def incoming_batch(
         return pd.DataFrame()
 
     # Find the most recent parquet file
-    parquet_objects = [
-        obj for obj in objects
-        if obj["Key"].endswith(".parquet")
-    ]
+    parquet_objects = [obj for obj in objects if obj["Key"].endswith(".parquet")]
 
     if not parquet_objects:
         context.log.warning("No Parquet files found in incoming-data bucket.")
@@ -113,16 +110,16 @@ def incoming_batch(
         format="parquet",
     )
 
-    context.log.info(
-        f"Batch loaded: {len(df)} records from {latest_key}"
-    )
+    context.log.info(f"Batch loaded: {len(df)} records from {latest_key}")
 
     # Store the batch key in metadata for downstream assets
-    context.add_output_metadata({
-        "batch_key": latest_key,
-        "num_records": len(df),
-        "num_columns": len(df.columns),
-    })
+    context.add_output_metadata(
+        {
+            "batch_key": latest_key,
+            "num_records": len(df),
+            "num_columns": len(df.columns),
+        }
+    )
 
     return df
 
@@ -144,10 +141,7 @@ def incoming_data_sensor(
     already been processed.
     """
     objects = minio.list_objects(INCOMING_BUCKET)
-    parquet_objects = [
-        obj for obj in objects
-        if obj["Key"].endswith(".parquet")
-    ]
+    parquet_objects = [obj for obj in objects if obj["Key"].endswith(".parquet")]
 
     if not parquet_objects:
         return SkipReason("No Parquet files found in incoming-data bucket.")
@@ -156,10 +150,7 @@ def incoming_data_sensor(
     last_processed = context.cursor or ""
 
     # Find new files
-    new_files = [
-        obj for obj in parquet_objects
-        if obj["Key"] > last_processed
-    ]
+    new_files = [obj for obj in parquet_objects if obj["Key"] > last_processed]
 
     if not new_files:
         return SkipReason("No new files since last check.")

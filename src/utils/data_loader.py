@@ -54,15 +54,15 @@ SENSOR_CHANNELS = [
 
 # Realistic value ranges for nuScenes-like data
 VALUE_RANGES = {
-    "bbox_width": (0.3, 5.0),       # meters
-    "bbox_height": (0.5, 4.0),      # meters
-    "bbox_length": (0.5, 12.0),     # meters
-    "translation_x": (-50.0, 50.0), # meters from ego vehicle
+    "bbox_width": (0.3, 5.0),  # meters
+    "bbox_height": (0.5, 4.0),  # meters
+    "bbox_length": (0.5, 12.0),  # meters
+    "translation_x": (-50.0, 50.0),  # meters from ego vehicle
     "translation_y": (-50.0, 50.0),
     "translation_z": (-3.0, 5.0),
     "num_lidar_pts": (1, 500),
     "num_radar_pts": (0, 50),
-    "visibility": (1, 4),           # 1=0-40%, 2=40-60%, 3=60-80%, 4=80-100%
+    "visibility": (1, 4),  # 1=0-40%, 2=40-60%, 3=60-80%, 4=80-100%
 }
 
 
@@ -86,10 +86,13 @@ def _generate_bbox_dimensions(
     }
 
     # Get category-specific profile, or use default
-    base_category = category.split(".")[0] + "." + category.split(".")[1] if "." in category else category
-    profile = size_profiles.get(category, size_profiles.get(base_category, {
-        "w": (0.3, 2.0), "h": (0.5, 2.0), "l": (0.3, 3.0)
-    }))
+    base_category = (
+        category.split(".")[0] + "." + category.split(".")[1] if "." in category else category
+    )
+    profile = size_profiles.get(
+        category,
+        size_profiles.get(base_category, {"w": (0.3, 2.0), "h": (0.5, 2.0), "l": (0.3, 3.0)}),
+    )
 
     width = rng.uniform(*profile["w"])
     height = rng.uniform(*profile["h"])
@@ -162,9 +165,16 @@ def generate_synthetic_baseline(
 
     # Enforce correct dtypes (important for schema validation)
     float_cols = [
-        "bbox_width", "bbox_height", "bbox_length",
-        "translation_x", "translation_y", "translation_z",
-        "rotation_w", "rotation_x", "rotation_y", "rotation_z",
+        "bbox_width",
+        "bbox_height",
+        "bbox_length",
+        "translation_x",
+        "translation_y",
+        "translation_z",
+        "rotation_w",
+        "rotation_x",
+        "rotation_y",
+        "rotation_z",
     ]
     int_cols = ["num_lidar_pts", "num_radar_pts", "visibility", "timestamp"]
     str_cols = ["sample_token", "scene_id", "category", "sensor_channel"]
@@ -237,12 +247,12 @@ def generate_synthetic_images(
             img[y, :] = [
                 int(180 + 40 * ratio),  # Blue channel
                 int(140 + 60 * ratio),  # Green channel
-                int(80 + 40 * ratio),   # Red channel
+                int(80 + 40 * ratio),  # Red channel
             ]
 
         # Road (bottom half) with some noise
         road_noise = rng.integers(60, 100, size=(height // 2, width, 3)).astype(np.uint8)
-        img[height // 2:, :] = road_noise
+        img[height // 2 :, :] = road_noise
 
         # Add some random rectangles to simulate objects
         n_objects = rng.integers(1, 5)

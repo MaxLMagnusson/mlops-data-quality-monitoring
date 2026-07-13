@@ -124,9 +124,7 @@ class TestDistributionShiftCorruptor:
     """Tests for distribution shift corruption."""
 
     def test_shifts_distributions(self, baseline_df):
-        result = apply_corruption(
-            baseline_df, "distribution_shift", severity=0.7, seed=42
-        )
+        result = apply_corruption(baseline_df, "distribution_shift", severity=0.7, seed=42)
         df = result.corrupted_df
 
         # Check that at least one column's mean has shifted significantly
@@ -142,9 +140,7 @@ class TestDistributionShiftCorruptor:
         assert shifted, "At least one column should show distribution shift"
 
     def test_preserves_schema(self, baseline_df):
-        result = apply_corruption(
-            baseline_df, "distribution_shift", severity=0.5, seed=42
-        )
+        result = apply_corruption(baseline_df, "distribution_shift", severity=0.5, seed=42)
         df = result.corrupted_df
 
         # Column count should be the same

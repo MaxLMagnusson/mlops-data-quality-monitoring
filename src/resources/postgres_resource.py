@@ -97,19 +97,22 @@ class PostgresResource(ConfigurableResource):
 
         with self._get_connection() as conn:
             with conn.cursor() as cur:
-                cur.execute(query, (
-                    run_id,
-                    batch_name,
-                    status,
-                    drift_score,
-                    failed_tests,
-                    total_tests,
-                    severity,
-                    evidently_report_path,
-                    records_processed,
-                    execution_time_seconds,
-                    json.dumps(details) if details else None,
-                ))
+                cur.execute(
+                    query,
+                    (
+                        run_id,
+                        batch_name,
+                        status,
+                        drift_score,
+                        failed_tests,
+                        total_tests,
+                        severity,
+                        evidently_report_path,
+                        records_processed,
+                        execution_time_seconds,
+                        json.dumps(details) if details else None,
+                    ),
+                )
             conn.commit()
 
         logger.info(
