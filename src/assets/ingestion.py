@@ -1,5 +1,5 @@
 """
-Ingestion Assets — Data Loading from MinIO
+Ingestion Assets - Data Loading from MinIO
 ============================================
 Dagster assets for detecting and loading incoming data batches
 from the MinIO object storage data lake.

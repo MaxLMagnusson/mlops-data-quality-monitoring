@@ -1,5 +1,5 @@
 """
-Seed Baseline — Upload Reference Dataset to MinIO
+Seed Baseline - Upload Reference Dataset to MinIO
 ===================================================
 Generates the synthetic baseline dataset and uploads it to MinIO's
 baseline bucket. Run this after `docker compose up` to initialize

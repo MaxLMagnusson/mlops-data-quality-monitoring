@@ -1,5 +1,5 @@
 """
-Drift Simulator — Data Corruption Engine
+Drift Simulator - Data Corruption Engine
 ==========================================
 Simulates real-world data quality issues in autonomous driving datasets.
 Each corruptor takes a severity parameter (0.0–1.0) controlling the

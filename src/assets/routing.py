@@ -1,5 +1,5 @@
 """
-Routing Assets — Conditional Data Routing Based on Validation
+Routing Assets - Conditional Data Routing Based on Validation
 ==============================================================
 Implements the pass/fail routing logic:
 
@@ -56,7 +56,7 @@ def validation_result(
     using both drift detection and data quality tests.
     """
     if incoming_batch.empty:
-        context.log.warning("Incoming batch is empty — skipping validation.")
+        context.log.warning("Incoming batch is empty - skipping validation.")
         return {"passed": False, "status": "ERROR", "error": "Empty batch"}
 
     context.log.info(
@@ -159,14 +159,14 @@ def route_data(
     if passed:
         # Move to clean production lake
         dest_prefix = f"validated/{timestamp}/"
-        context.log.info(f"✅ PASSED — Moving data to s3://{CLEAN_BUCKET}/{dest_prefix}")
+        context.log.info(f"✅ PASSED - Moving data to s3://{CLEAN_BUCKET}/{dest_prefix}")
         if parquet_objects:
             moved = minio.move_prefix(INCOMING_BUCKET, "", CLEAN_BUCKET, dest_prefix)
             context.log.info(f"Moved {len(moved)} objects to clean lake.")
     else:
         # Move to quarantine
         dest_prefix = f"quarantined/{timestamp}/"
-        context.log.info(f"❌ FAILED — Moving data to s3://{QUARANTINE_BUCKET}/{dest_prefix}")
+        context.log.info(f"❌ FAILED - Moving data to s3://{QUARANTINE_BUCKET}/{dest_prefix}")
         if parquet_objects:
             moved = minio.move_prefix(INCOMING_BUCKET, "", QUARANTINE_BUCKET, dest_prefix)
             context.log.info(f"Moved {len(moved)} objects to quarantine.")

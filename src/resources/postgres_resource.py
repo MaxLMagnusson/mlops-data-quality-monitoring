@@ -1,5 +1,5 @@
 """
-PostgreSQL Resource — Pipeline Run Logger
+PostgreSQL Resource - Pipeline Run Logger
 ==========================================
 Dagster ConfigurableResource for logging pipeline run metadata to PostgreSQL.
 Stores validation results, drift scores, and execution metrics for the

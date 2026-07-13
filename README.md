@@ -1,6 +1,6 @@
 # 🔍 MLops Data Quality Monitoring Pipeline
 
-[![CI — Lint, Test & Build](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml)
+[![CI - Lint, Test & Build](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml/badge.svg)](https://github.com/MaxLMagnusson/mlops-data-quality-monitoring/actions/workflows/ci.yml)
 ![Python 3.11](https://img.shields.io/badge/Python-3.11-blue?logo=python&logoColor=white)
 ![Dagster](https://img.shields.io/badge/Dagster-1.9-purple?logo=dagster&logoColor=white)
 ![Evidently](https://img.shields.io/badge/Evidently_AI-0.6-green)
@@ -101,20 +101,20 @@ python scripts/seed_baseline.py
 ### 4. Simulate Data Drift
 
 ```bash
-# Medium distribution shift — triggers drift detection
+# Medium distribution shift - triggers drift detection
 python scripts/simulate_drift.py --profile distribution_shift --severity 0.5
 
-# Severe camera fault — triggers quarantine
+# Severe camera fault - triggers quarantine
 python scripts/simulate_drift.py --profile camera_fault --severity 0.9
 
-# Clean data — should pass validation
+# Clean data - should pass validation
 python scripts/simulate_drift.py --profile none
 ```
 
 ### 5. Monitor Results
 
-- **Dagster UI**: [http://localhost:3000](http://localhost:3000) — view pipeline runs, asset graph
-- **MinIO Console**: [http://localhost:9001](http://localhost:9001) — browse data lake buckets
+- **Dagster UI**: [http://localhost:3000](http://localhost:3000) - view pipeline runs, asset graph
+- **MinIO Console**: [http://localhost:9001](http://localhost:9001) - browse data lake buckets
   - Login: `minioadmin` / `minioadmin123`
 
 ---
@@ -230,7 +230,7 @@ from nuscenes.nuscenes import NuScenes
 nusc = NuScenes(version='v1.0-mini', dataroot='data/nuscenes-mini/')
 ```
 
-The pipeline code requires **no changes** — the validation engine works on any DataFrame with the same schema.
+The pipeline code requires **no changes** - the validation engine works on any DataFrame with the same schema.
 
 ---
 

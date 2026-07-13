@@ -1,5 +1,5 @@
 """
-Synthetic Data Generator — nuScenes-like Schema
+Synthetic Data Generator - nuScenes-like Schema
 =================================================
 Generates synthetic autonomous driving metadata that mirrors the nuScenes
 annotation format. Used as the baseline reference dataset for data quality

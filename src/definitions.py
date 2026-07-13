@@ -1,5 +1,5 @@
 """
-Dagster Definitions — Pipeline Entry Point
+Dagster Definitions - Pipeline Entry Point
 ============================================
 Central configuration that registers all assets, sensors, and resources
 with the Dagster framework. This is the module loaded by the Dagster

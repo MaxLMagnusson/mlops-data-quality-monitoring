@@ -1,5 +1,5 @@
 """
-Validation Engine — Evidently AI Data Drift & Quality Checks
+Validation Engine - Evidently AI Data Drift & Quality Checks
 =============================================================
 The mathematical brain of the pipeline. Compares incoming data batches
 against the baseline reference using statistical tests to detect:

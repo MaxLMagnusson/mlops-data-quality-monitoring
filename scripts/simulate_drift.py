@@ -1,5 +1,5 @@
 """
-Drift Simulator CLI — Inject Data Quality Issues
+Drift Simulator CLI - Inject Data Quality Issues
 ==================================================
 Generates a corrupted data batch and uploads it to the MinIO
 incoming-data bucket to trigger the Dagster pipeline.
@@ -20,7 +20,7 @@ Usage:
     # Combined corruption
     python scripts/simulate_drift.py --profile combined --severity 0.5
 
-    # Clean batch (no corruption — should pass validation)
+    # Clean batch (no corruption - should pass validation)
     python scripts/simulate_drift.py --profile none --severity 0.0
 """
 
@@ -41,12 +41,12 @@ from src.resources.minio_resource import MinIOResource
 from src.utils.data_loader import generate_synthetic_baseline
 
 PROFILE_DESCRIPTIONS = {
-    "camera_fault": "🎥 Camera Fault — Degrades visibility, adds sensor noise",
-    "sensor_missing": "📡 Sensor Missing — Drops coordinate values, introduces NaN",
-    "schema_break": "🔧 Schema Break — Injects type mismatches (float → string)",
-    "distribution_shift": "📈 Distribution Shift — Scales/offsets numeric features",
-    "combined": "💥 Combined — Multiple corruption types applied together",
-    "none": "✅ Clean — No corruption (should pass validation)",
+    "camera_fault": "🎥 Camera Fault - Degrades visibility, adds sensor noise",
+    "sensor_missing": "📡 Sensor Missing - Drops coordinate values, introduces NaN",
+    "schema_break": "🔧 Schema Break - Injects type mismatches (float → string)",
+    "distribution_shift": "📈 Distribution Shift - Scales/offsets numeric features",
+    "combined": "💥 Combined - Multiple corruption types applied together",
+    "none": "✅ Clean - No corruption (should pass validation)",
 }
 
 
@@ -158,7 +158,7 @@ def main():
 
     # Step 3: Upload to MinIO
     if args.dry_run:
-        print("\n🏃 Dry run — skipping MinIO upload.")
+        print("\n🏃 Dry run - skipping MinIO upload.")
         # Save locally instead
         output_path = f"data/synthetic/corrupted_batch_{timestamp}.parquet"
         os.makedirs("data/synthetic", exist_ok=True)

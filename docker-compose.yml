@@ -15,7 +15,7 @@
 
 services:
   # ---------------------------------------------------------------------------
-  # PostgreSQL — Dagster metadata store + pipeline run logging
+  # PostgreSQL - Dagster metadata store + pipeline run logging
   # ---------------------------------------------------------------------------
   postgres:
     image: postgres:15-alpine
@@ -37,7 +37,7 @@ services:
       retries: 5
 
   # ---------------------------------------------------------------------------
-  # MinIO — S3-compatible object storage (data lake)
+  # MinIO - S3-compatible object storage (data lake)
   # ---------------------------------------------------------------------------
   minio:
     image: quay.io/minio/minio:latest
@@ -59,7 +59,7 @@ services:
       retries: 5
 
   # ---------------------------------------------------------------------------
-  # MinIO Init — Create required buckets on first startup
+  # MinIO Init - Create required buckets on first startup
   # ---------------------------------------------------------------------------
   minio-init:
     image: quay.io/minio/mc:latest
@@ -83,7 +83,7 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
 
   # ---------------------------------------------------------------------------
-  # User Code — Pipeline logic served via Dagster gRPC
+  # User Code - Pipeline logic served via Dagster gRPC
   # ---------------------------------------------------------------------------
   user-code:
     build:
@@ -109,7 +109,7 @@ services:
         condition: service_healthy
 
   # ---------------------------------------------------------------------------
-  # Dagster Webserver — UI and GraphQL API
+  # Dagster Webserver - UI and GraphQL API
   # ---------------------------------------------------------------------------
   dagster-webserver:
     build:
@@ -141,7 +141,7 @@ services:
         condition: service_started
 
   # ---------------------------------------------------------------------------
-  # Dagster Daemon — Schedules, sensors, and run queue
+  # Dagster Daemon - Schedules, sensors, and run queue
   # ---------------------------------------------------------------------------
   dagster-daemon:
     build:

@@ -1,5 +1,5 @@
 """
-MinIO Resource — S3-compatible Object Storage Client
+MinIO Resource - S3-compatible Object Storage Client
 =====================================================
 Dagster ConfigurableResource wrapping boto3 for MinIO interactions.
 Handles bucket management, file uploads/downloads, and object operations
