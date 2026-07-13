@@ -8,7 +8,7 @@
 ![MinIO](https://img.shields.io/badge/MinIO-S3--Compatible-C72E49?logo=minio&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
 
-A data quality monitoring system** for autonomous driving datasets, built to detect data drift, enforce schema validation, and automatically filter corrupt data, all orchestrated with Dagster and running entirely on Docker.
+A data quality monitoring system for autonomous driving datasets, built to detect data drift, enforce schema validation, and automatically filter corrupt data, all orchestrated with Dagster and running entirely on Docker.
 
 ---
 
