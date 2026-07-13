@@ -121,7 +121,7 @@ python scripts/simulate_drift.py --profile none
 
 ---
 
-## 📊 Data Corruption Profiles
+## Data Corruption Profiles
 
 The drift simulator supports 4 corruption profiles, each mimicking real-world data quality issues:
 
@@ -140,7 +140,7 @@ Severity parameter (0.0–1.0) controls corruption intensity:
 
 ---
 
-## 🧪 Validation Engine
+## Validation Engine
 
 The validation engine uses **Evidently AI** to perform two types of checks:
 
@@ -167,7 +167,7 @@ The validation engine uses **Evidently AI** to perform two types of checks:
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 ├── docker-compose.yml           # One-command infrastructure
@@ -198,7 +198,7 @@ The validation engine uses **Evidently AI** to perform two types of checks:
 
 ---
 
-## 🧪 Running Tests
+## Running Tests
 
 ```bash
 # Install dev dependencies
@@ -218,7 +218,7 @@ ruff format --check src/ tests/ scripts/
 
 ---
 
-## 🔄 Using Real nuScenes Data
+## Using Real nuScenes Data
 
 This project uses synthetic data by default for portability. To use real nuScenes data:
 
@@ -236,6 +236,6 @@ The pipeline code requires **no changes** — the validation engine works on any
 
 ---
 
-## 📝 License
+## License
 
-This project is for portfolio/educational purposes. The nuScenes dataset (if used) is subject to its own [license](https://www.nuscenes.org/terms-of-use).
+MIT License
