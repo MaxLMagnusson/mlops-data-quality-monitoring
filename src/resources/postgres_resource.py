@@ -6,7 +6,6 @@ Stores validation results, drift scores, and execution metrics for the
 monitoring dashboard.
 """
 
-
 import json
 import logging
 import uuid

@@ -10,7 +10,6 @@ Includes:
 - Asset to load incoming batch data
 """
 
-
 import logging
 
 import pandas as pd

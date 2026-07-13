@@ -17,7 +17,6 @@ against the baseline reference using statistical tests to detect:
 Uses Evidently AI v0.7+ API (Report with presets and include_tests).
 """
 
-
 import logging
 import time
 from dataclasses import dataclass, field
