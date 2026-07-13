@@ -1,6 +1,6 @@
-# =============================================================================
-# MLops Data Quality Monitoring - PostgreSQL Schema
-# =============================================================================
+-- =============================================================================
+-- MLops Data Quality Monitoring - PostgreSQL Schema
+-- =============================================================================
 -- Dagster uses its own internal tables; this schema is for our pipeline metadata.
 
 CREATE SCHEMA IF NOT EXISTS monitoring;
