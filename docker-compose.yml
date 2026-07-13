@@ -1,0 +1,170 @@
+# =============================================================================
+# MLops Data Quality Monitoring - Docker Compose
+# =============================================================================
+# Usage:
+#   cp .env.example .env
+#   docker compose up -d
+#
+# Services:
+#   - postgres:         PostgreSQL 15 (Dagster metadata + pipeline run logs)
+#   - minio:            MinIO S3-compatible object storage
+#   - dagster-webserver: Dagster UI (port 3000)
+#   - dagster-daemon:   Dagster background scheduler/sensor runner
+#   - user-code:        Pipeline code served via gRPC (port 4000)
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # PostgreSQL — Dagster metadata store + pipeline run logging
+  # ---------------------------------------------------------------------------
+  postgres:
+    image: postgres:15-alpine
+    container_name: dqm-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dagster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dagster_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dagster_db}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dagster}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # MinIO — S3-compatible object storage (data lake)
+  # ---------------------------------------------------------------------------
+  minio:
+    image: quay.io/minio/minio:latest
+    container_name: dqm-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Console UI
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # ---------------------------------------------------------------------------
+  # MinIO Init — Create required buckets on first startup
+  # ---------------------------------------------------------------------------
+  minio-init:
+    image: quay.io/minio/mc:latest
+    container_name: dqm-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 $${MINIO_ROOT_USER} $${MINIO_ROOT_PASSWORD};
+      mc mb --ignore-existing local/incoming-data;
+      mc mb --ignore-existing local/clean-production-lake;
+      mc mb --ignore-existing local/quarantine;
+      mc mb --ignore-existing local/reports;
+      mc mb --ignore-existing local/baseline;
+      echo 'All buckets created successfully.';
+      exit 0;
+      "
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+
+  # ---------------------------------------------------------------------------
+  # User Code — Pipeline logic served via Dagster gRPC
+  # ---------------------------------------------------------------------------
+  user-code:
+    build:
+      context: .
+      dockerfile: docker/pipeline/Dockerfile
+    container_name: dqm-user-code
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dagster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dagster_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dagster_db}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      MINIO_ENDPOINT: http://minio:9000
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
+  # Dagster Webserver — UI and GraphQL API
+  # ---------------------------------------------------------------------------
+  dagster-webserver:
+    build:
+      context: docker/dagster
+      dockerfile: Dockerfile
+    container_name: dqm-dagster-webserver
+    restart: unless-stopped
+    entrypoint:
+      - dagster-webserver
+      - -h
+      - "0.0.0.0"
+      - -p
+      - "3000"
+      - -w
+      - /opt/dagster/dagster_home/workspace.yaml
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      POSTGRES_USER: ${POSTGRES_USER:-dagster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dagster_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dagster_db}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      user-code:
+        condition: service_started
+
+  # ---------------------------------------------------------------------------
+  # Dagster Daemon — Schedules, sensors, and run queue
+  # ---------------------------------------------------------------------------
+  dagster-daemon:
+    build:
+      context: docker/dagster
+      dockerfile: Dockerfile
+    container_name: dqm-dagster-daemon
+    restart: unless-stopped
+    entrypoint:
+      - dagster-daemon
+      - run
+    environment:
+      DAGSTER_HOME: /opt/dagster/dagster_home
+      POSTGRES_USER: ${POSTGRES_USER:-dagster}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dagster_password}
+      POSTGRES_DB: ${POSTGRES_DB:-dagster_db}
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      user-code:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  minio_data:
