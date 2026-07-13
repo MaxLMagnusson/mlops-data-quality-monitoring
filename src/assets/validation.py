@@ -6,14 +6,15 @@ against the baseline reference using statistical tests to detect:
 
 1. Data Drift: Distribution shifts in numeric/categorical features
    - Kolmogorov-Smirnov test for continuous variables
-   - Chi-squared test for categorical variables
-   - Per-column p-value thresholds
+   - Per-column drift detection with configurable p-value thresholds
 
 2. Data Quality: Schema and value integrity checks
-   - Column type validation
-   - Missing value thresholds
-   - Value range enforcement
+   - Missing value counts
+   - Value statistics (min, max, mean, std)
+   - Row/column counts
    - Duplicate detection
+
+Uses Evidently AI v0.7+ API (Report with presets and include_tests).
 """
 
 from __future__ import annotations
@@ -24,16 +25,13 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 import pandas as pd
-from evidently.metric_preset import DataDriftPreset, DataQualityPreset
-from evidently.report import Report
-from evidently.test_preset import DataDriftTestPreset, DataQualityTestPreset
-from evidently.test_suite import TestSuite
-from evidently.pipeline.column_mapping import ColumnMapping
+from evidently import Report
+from evidently.presets import DataDriftPreset, DataSummaryPreset
 
 logger = logging.getLogger(__name__)
 
 
-# Column classification for Evidently
+# Column classification for filtering
 NUMERICAL_FEATURES = [
     "bbox_width",
     "bbox_height",
@@ -129,96 +127,98 @@ def _classify_severity(drift_score: float, failed_tests: int, total_tests: int) 
         return "LOW"
 
 
-def _get_column_mapping(df: pd.DataFrame) -> ColumnMapping:
-    """
-    Create Evidently ColumnMapping based on available columns.
-
-    Filters the predefined feature lists to only include columns
-    actually present in the DataFrame.
-    """
-    mapping = ColumnMapping()
-    mapping.numerical_features = [
-        col for col in NUMERICAL_FEATURES if col in df.columns
-    ]
-    mapping.categorical_features = [
-        col for col in CATEGORICAL_FEATURES if col in df.columns
-    ]
-    return mapping
-
-
 def run_drift_report(
     reference_df: pd.DataFrame,
     current_df: pd.DataFrame,
-) -> tuple[Report, dict[str, Any]]:
+) -> tuple[Any, dict[str, Any]]:
     """
     Run Evidently DataDrift report comparing current vs. reference data.
 
-    Returns the Report object and a parsed summary dictionary.
-    """
-    column_mapping = _get_column_mapping(reference_df)
+    Uses the Evidently 0.7+ Report API with DataDriftPreset and include_tests=True.
 
-    report = Report(metrics=[DataDriftPreset()])
-    report.run(
+    Returns the Snapshot object and a parsed summary dictionary.
+    """
+    report = Report([DataDriftPreset()], include_tests=True)
+    snapshot = report.run(
         reference_data=reference_df,
         current_data=current_df,
-        column_mapping=column_mapping,
     )
 
-    report_dict = report.as_dict()
+    report_dict = snapshot.dict()
 
-    # Parse drift results
+    # Parse drift results from metrics
     drift_info = {}
     drifted_columns = []
+    total_drift_columns = 0
 
-    for metric_result in report_dict.get("metrics", []):
-        result_data = metric_result.get("result", {})
-        if "drift_by_columns" in result_data:
-            for col_name, col_data in result_data["drift_by_columns"].items():
-                drift_info[col_name] = {
-                    "drifted": col_data.get("drift_detected", False),
-                    "p_value": col_data.get("drift_score", None),
-                    "stattest": col_data.get("stattest_name", "unknown"),
+    for metric in report_dict.get("metrics", []):
+        metric_name = metric.get("metric_name", "")
+        value = metric.get("value")
+
+        # ValueDrift metrics are per-column drift scores
+        if "ValueDrift" in metric_name:
+            # Extract column name from metric_name
+            config = metric.get("config", {})
+            column = config.get("column", "")
+            method = config.get("method", "unknown")
+            threshold = config.get("threshold", 0.05)
+
+            if column:
+                total_drift_columns += 1
+                # In Evidently 0.7, the value is the p-value/drift score
+                is_drifted = value is not None and value < threshold
+                drift_info[column] = {
+                    "drifted": is_drifted,
+                    "p_value": value,
+                    "stattest": method,
+                    "threshold": threshold,
                 }
-                if col_data.get("drift_detected", False):
-                    drifted_columns.append(col_name)
+                if is_drifted:
+                    drifted_columns.append(column)
+
+    # Also parse tests for overall drift status
+    for test in report_dict.get("tests", []):
+        test_name = test.get("name", "")
+        if "Value Drift" in test_name and test.get("status") == "FAIL":
+            # Extract column from test description
+            desc = test.get("description", "")
+            # Already tracked via metrics above
+            pass
 
     # Calculate overall drift score
-    total_cols = max(len(drift_info), 1)
-    drift_score = len(drifted_columns) / total_cols
+    drift_score = len(drifted_columns) / max(total_drift_columns, 1)
 
     summary = {
         "drift_score": drift_score,
         "drifted_columns": drifted_columns,
-        "total_columns_tested": total_cols,
+        "total_columns_tested": total_drift_columns,
         "per_column": drift_info,
     }
 
-    return report, summary
+    return snapshot, summary
 
 
 def run_data_quality_tests(
     reference_df: pd.DataFrame,
     current_df: pd.DataFrame,
-) -> tuple[TestSuite, dict[str, Any]]:
+) -> tuple[Any, dict[str, Any]]:
     """
-    Run Evidently DataQuality test suite.
+    Run Evidently DataSummary report with tests.
 
-    Checks for:
-    - Schema consistency (column types, names)
-    - Missing value thresholds
-    - Value range violations
-    - Duplicate rows
+    Uses the Evidently 0.7+ Report API with DataSummaryPreset
+    and include_tests=True for automated pass/fail checks on:
+    - Missing value counts
+    - Value statistics changes
+    - Row/column count changes
+    - Duplicate detection
     """
-    column_mapping = _get_column_mapping(reference_df)
-
-    suite = TestSuite(tests=[DataQualityTestPreset()])
-    suite.run(
+    report = Report([DataSummaryPreset()], include_tests=True)
+    snapshot = report.run(
         reference_data=reference_df,
         current_data=current_df,
-        column_mapping=column_mapping,
     )
 
-    results_dict = suite.as_dict()
+    results_dict = snapshot.dict()
 
     # Parse test results
     test_results = []
@@ -245,7 +245,7 @@ def run_data_quality_tests(
         "test_results": test_results,
     }
 
-    return suite, summary
+    return snapshot, summary
 
 
 def validate_batch(
@@ -275,8 +275,8 @@ def validate_batch(
     # --- Step 1: Data Drift Detection ---
     logger.info("Running data drift detection...")
     try:
-        drift_report, drift_summary = run_drift_report(reference_df, current_df)
-        drift_html = drift_report.get_html()
+        drift_snapshot, drift_summary = run_drift_report(reference_df, current_df)
+        drift_html = drift_snapshot.get_html_str(as_iframe=False)
     except Exception as e:
         logger.error(f"Drift detection failed: {e}")
         return ValidationResult(
@@ -292,10 +292,10 @@ def validate_batch(
     # --- Step 2: Data Quality Tests ---
     logger.info("Running data quality tests...")
     try:
-        quality_suite, quality_summary = run_data_quality_tests(
+        quality_snapshot, quality_summary = run_data_quality_tests(
             reference_df, current_df
         )
-        quality_html = quality_suite.get_html()
+        quality_html = quality_snapshot.get_html_str(as_iframe=False)
     except Exception as e:
         logger.error(f"Data quality tests failed: {e}")
         quality_summary = {"total_tests": 0, "failed_tests": 0, "test_results": []}
