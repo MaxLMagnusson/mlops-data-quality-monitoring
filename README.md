@@ -8,9 +8,7 @@
 ![MinIO](https://img.shields.io/badge/MinIO-S3--Compatible-C72E49?logo=minio&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-4169E1?logo=postgresql&logoColor=white)
 
-A **production-grade data quality monitoring system** for autonomous driving datasets, built to detect data drift, enforce schema validation, and automatically quarantine corrupted data — all orchestrated with Dagster and running entirely on Docker.
-
-> **Portfolio Project** — Demonstrates MLops/Data Engineering skills: pipeline orchestration, statistical validation, infrastructure-as-code, and automated testing.
+A data quality monitoring system** for autonomous driving datasets, built to detect data drift, enforce schema validation, and automatically filter corrupt data, all orchestrated with Dagster and running entirely on Docker.
 
 ---
 
