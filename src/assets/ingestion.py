@@ -10,7 +10,6 @@ Includes:
 - Asset to load incoming batch data
 """
 
-from __future__ import annotations
 
 import logging
 

@@ -6,7 +6,6 @@ Stores validation results, drift scores, and execution metrics for the
 monitoring dashboard.
 """
 
-from __future__ import annotations
 
 import json
 import logging

@@ -13,7 +13,6 @@ Buckets:
 - baseline:              Reference dataset for comparison
 """
 
-from __future__ import annotations
 
 import io
 import json

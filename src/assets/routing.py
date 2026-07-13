@@ -9,7 +9,6 @@ Implements the pass/fail routing logic:
 Also saves Evidently HTML reports to the /reports bucket in MinIO.
 """
 
-from __future__ import annotations
 
 import logging
 from datetime import datetime, timezone
